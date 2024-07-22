@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: project-plato
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:1.32.0
+        command: ['sh''c''tail''-f''/dev/null']
+        imagePullPolicy: Always
+        securityContext:
+          readOnlyRootFilesystem: true
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        livenessProbe:
+          exec:
+            command:
+            - 'true'
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 3
+          periodSeconds: 3
+      volumes:
+      - name: tmp
+        emptyDir: {}

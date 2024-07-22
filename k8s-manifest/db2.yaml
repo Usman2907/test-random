@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db2
+  namespcae: project-plato
+  labels:
+    app: db2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db2
+  template:
+    metadata:
+      labels:
+        app: db2
+    spec:
+      containers:
+      - name: db2
+        image: nginx:1.16.1-alpine
+        env:
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db2-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db2-secret
+              key: password
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "0.5"
+            memory: "512Mi"
